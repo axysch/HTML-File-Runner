@@ -20,7 +20,7 @@ function loadFile(file) {
   reader.onload = function(e) {
     const content = e.target.result;
 
-    viewer.srcdoc = content;
+    openGameContent(file.name, content);
 
     saveGame(file.name, content);
   };
@@ -45,6 +45,49 @@ function saveGame(name, content) {
 
     renderGames();
   }
+}
+
+function openGameContent(name, content) {
+  const wrappedContent = `
+    <script>
+      const originalSetItem = localStorage.setItem;
+
+      localStorage.setItem = function(key, value) {
+        const gameData =
+          JSON.parse(parent.localStorage.getItem("gameData")) || {};
+
+        if (!gameData["${name}"]) {
+          gameData["${name}"] = {};
+        }
+
+        gameData["${name}"][key] = value;
+
+        parent.localStorage.setItem(
+          "gameData",
+          JSON.stringify(gameData)
+        );
+
+        originalSetItem.apply(this, arguments);
+      };
+
+      window.addEventListener("load", () => {
+        const saved =
+          JSON.parse(parent.localStorage.getItem("gameData")) || {};
+
+        const gameSave = saved["${name}"];
+
+        if (gameSave) {
+          Object.keys(gameSave).forEach(key => {
+            localStorage.setItem(key, gameSave[key]);
+          });
+        }
+      });
+    </script>
+
+    ${content}
+  `;
+
+  viewer.srcdoc = wrappedContent;
 }
 
 function renderGames() {
@@ -73,7 +116,7 @@ function renderGames() {
 
     item.querySelector(".open-btn")
       .addEventListener("click", () => {
-        viewer.srcdoc = game.content;
+        openGameContent(game.name, game.content);
       });
 
     item.querySelector(".delete-btn")
@@ -86,6 +129,18 @@ function renderGames() {
 }
 
 function deleteGame(index) {
+  const gameName = savedGames[index].name;
+
+  let gameData =
+    JSON.parse(localStorage.getItem("gameData")) || {};
+
+  delete gameData[gameName];
+
+  localStorage.setItem(
+    "gameData",
+    JSON.stringify(gameData)
+  );
+
   savedGames.splice(index, 1);
 
   localStorage.setItem(
