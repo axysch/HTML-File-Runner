@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Game Runner</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app">
+    <h1>HTML Game Runner</h1>
+
+    <div class="drop-area" id="dropArea">
+      Drag & Drop an .html file here
+      <br><br>
+      or
+      <br><br>
+      <input type="file" id="fileInput" accept=".html">
+    </div>
+
+    <button id="fullscreenBtn">
+      Fullscreen Preview
+    </button>
+
+    <iframe id="viewer"></iframe>
+
+    <div id="gameList">
+      <h2>Saved Games</h2>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
