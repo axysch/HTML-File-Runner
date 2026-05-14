@@ -1,49 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HTML Game Launcher</title>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
 <div class="app">
+	<h1>HTML File Runner</h1>
 
-  <h1>HTML Game Launcher</h1>
-
-  <div class="drop-area" id="dropArea">
-    Drag & Drop .html games here
-    <br><br>
-
-    <input
-      type="file"
-      id="fileInput"
-      accept=".html">
+	<div class="drop-area" id="dropArea">
+		Drag & Drop an .html file here
+		<br><br>
+    or
+		<br><br>
+		<input type="file" id="fileInput" accept=".html">
   </div>
 
-  <button id="fullscreenBtn">
-    Fullscreen
-  </button>
+		<button id="fullscreenBtn">Fullscreen Preview</button>
 
-  <div id="viewerContainer">
-
-    <iframe
-      id="viewer"
-      allowfullscreen
-      allow="fullscreen; autoplay; gamepad *; xr-spatial-tracking"
-    ></iframe>
-
-  </div>
-
-  <div id="gameList">
-    <h2>Saved Games</h2>
-  </div>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html>
+		<iframe id="viewer"></iframe>
+	</div>
