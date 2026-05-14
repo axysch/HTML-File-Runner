@@ -1,6 +1,12 @@
 const dropArea = document.getElementById("dropArea");
 const fileInput = document.getElementById("fileInput");
 const gameList = document.getElementById("gameList");
+const viewer = document.getElementById("viewer");
+const fullscreenBtn =
+  document.getElementById("fullscreenBtn");
+
+const viewerContainer =
+  document.getElementById("viewerContainer");
 
 let savedGames =
   JSON.parse(localStorage.getItem("savedGames")) || [];
@@ -16,16 +22,20 @@ function loadFile(file) {
   const reader = new FileReader();
 
   reader.onload = (e) => {
-    const content = e.target.result;
+    saveGame(file.name, e.target.result);
 
-    saveGame(file.name, content);
+    openGame({
+      name: file.name,
+      content: e.target.result
+    });
   };
 
   reader.readAsText(file);
 }
 
 function saveGame(name, content) {
-  const exists = savedGames.find(g => g.name === name);
+  const exists =
+    savedGames.find(g => g.name === name);
 
   if (!exists) {
     savedGames.push({
@@ -43,15 +53,11 @@ function saveGame(name, content) {
 }
 
 function openGame(game) {
-  // create blob html page
-  const blob = new Blob(
-    [game.content],
-    { type: "text/html" }
-  );
+  viewer.srcdoc = game.content;
 
-  const url = URL.createObjectURL(blob);
-
-  window.open(url, "_blank");
+  setTimeout(() => {
+    viewer.contentWindow.focus();
+  }, 500);
 }
 
 function deleteGame(index) {
@@ -66,16 +72,16 @@ function deleteGame(index) {
 }
 
 function renderGames() {
-  gameList.innerHTML = `
-    <h2>Saved Games</h2>
-  `;
+  gameList.innerHTML =
+    "<h2>Saved Games</h2>";
 
   savedGames.forEach((game, index) => {
-    const item = document.createElement("div");
 
-    item.className = "game-item";
+    const div = document.createElement("div");
 
-    item.innerHTML = `
+    div.className = "game-item";
+
+    div.innerHTML = `
       <div class="game-name">
         ${game.name}
       </div>
@@ -89,17 +95,13 @@ function renderGames() {
       </button>
     `;
 
-    item.querySelector(".open-btn")
-      .addEventListener("click", () => {
-        openGame(game);
-      });
+    div.querySelector(".open-btn")
+      .onclick = () => openGame(game);
 
-    item.querySelector(".delete-btn")
-      .addEventListener("click", () => {
-        deleteGame(index);
-      });
+    div.querySelector(".delete-btn")
+      .onclick = () => deleteGame(index);
 
-    gameList.appendChild(item);
+    gameList.appendChild(div);
   });
 }
 
@@ -122,7 +124,16 @@ dropArea.addEventListener("drop", (e) => {
 
   dropArea.classList.remove("dragover");
 
-  const file = e.dataTransfer.files[0];
+  loadFile(e.dataTransfer.files[0]);
+});
 
-  loadFile(file);
+fullscreenBtn.addEventListener("click", () => {
+
+  if (viewerContainer.requestFullscreen) {
+    viewerContainer.requestFullscreen();
+  }
+
+  setTimeout(() => {
+    viewer.contentWindow.focus();
+  }, 500);
 });
