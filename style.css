@@ -1,77 +1,123 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #121212;
+  background: #0f0f0f;
   color: white;
+  font-family: Arial, sans-serif;
+  overflow-x: hidden;
 }
 
 .app {
-  padding: 20px;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 25px;
 }
 
 h1 {
-  margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 40px;
+  color: #ffffff;
 }
 
 .drop-area {
-  border: 3px dashed #555;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
   padding: 40px;
-  border-radius: 15px;
-  background: #1e1e1e;
-  margin-bottom: 20px;
-  transition: 0.3s;
+  border: 3px dashed #444;
+  border-radius: 20px;
+  background: #1a1a1a;
+  text-align: center;
+  transition: 0.25s;
+  font-size: 20px;
 }
 
 .drop-area.dragover {
   border-color: #4f46e5;
-  background: #2a2a2a;
+  background: #242424;
+  transform: scale(1.01);
 }
 
 input[type="file"] {
-  margin-top: 10px;
+  margin-top: 15px;
   color: white;
 }
 
-#gameList {
-  margin-top: 20px;
-  padding: 20px;
-  background: #1e1e1e;
-  border-radius: 15px;
-}
-
-.game-item {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin: 10px 0;
-  flex-wrap: wrap;
-}
-
-.game-name {
-  min-width: 200px;
-  text-align: left;
-}
-
 button {
-  padding: 10px 15px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 15px;
   cursor: pointer;
-  background: #4f46e5;
+  transition: 0.2s;
   color: white;
 }
 
 button:hover {
-  background: #3730a3;
+  transform: translateY(-2px);
 }
 
-.delete-btn {
-  background: #dc2626;
+#fullscreenBtn {
+  display: block;
+  margin: 20px auto;
+  background: #2563eb;
 }
 
-.delete-btn:hover {
-  background: #991b1b;
+#fullscreenBtn:hover {
+  background: #1d4ed8;
+}
+
+#viewerContainer {
+  width: 100%;
+  height: 650px;
+  margin-top: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid #222;
+  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+#viewer {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+#gameList {
+  margin-top: 30px;
+  background: #1a1a1a;
+  border-radius: 20px;
+  padding: 25px;
+}
+
+#gameList h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.game-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #222;
+  padding: 15px;
+  border-radius: 15px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.game-name {
+  font-size: 16px;
+  font-weight: bold;
+  word-break: break-word;
 }
 
 .open-btn {
@@ -79,5 +125,38 @@ button:hover {
 }
 
 .open-btn:hover {
-  background: #166534;
+  background: #15803d;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 700px) {
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .drop-area {
+    padding: 25px;
+    font-size: 17px;
+  }
+
+  #viewerContainer {
+    height: 450px;
+  }
+
+  .game-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
 }
