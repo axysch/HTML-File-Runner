@@ -1,154 +1,90 @@
 const dropArea = document.getElementById("dropArea");
 const fileInput = document.getElementById("fileInput");
-const viewer = document.getElementById("viewer");
-const fullscreenBtn = document.getElementById("fullscreenBtn");
 const gameList = document.getElementById("gameList");
 
-let savedGames =
-  JSON.parse(localStorage.getItem("savedGames")) || [];
+let savedGames = JSON.parse(localStorage.getItem("savedGames")) || [];
 
 renderGames();
 
 function loadFile(file) {
   if (!file.name.endsWith(".html")) {
-    alert("Please upload an HTML file.");
+    alert("Only .html files allowed");
     return;
   }
 
   const reader = new FileReader();
 
-  reader.onload = function(e) {
-    const content = e.target.result;
-
-    openGameContent(file.name, content);
-
-    saveGame(file.name, content);
+  reader.onload = (e) => {
+    saveGame(file.name, e.target.result);
   };
 
   reader.readAsText(file);
 }
 
 function saveGame(name, content) {
-  const exists =
-    savedGames.find(game => game.name === name);
+  if (!savedGames.find(g => g.name === name)) {
+    savedGames.push({ name, content });
 
-  if (!exists) {
-    savedGames.push({
-      name,
-      content
-    });
-
-    localStorage.setItem(
-      "savedGames",
-      JSON.stringify(savedGames)
-    );
+    localStorage.setItem("savedGames", JSON.stringify(savedGames));
 
     renderGames();
   }
 }
 
-function openGameContent(name, content) {
-  const wrappedContent = `
-    <script>
-      const originalSetItem = localStorage.setItem;
+function openGame(game) {
+  const win = window.open();
 
-      localStorage.setItem = function(key, value) {
-        const gameData =
-          JSON.parse(parent.localStorage.getItem("gameData")) || {};
-
-        if (!gameData["${name}"]) {
-          gameData["${name}"] = {};
-        }
-
-        gameData["${name}"][key] = value;
-
-        parent.localStorage.setItem(
-          "gameData",
-          JSON.stringify(gameData)
-        );
-
-        originalSetItem.apply(this, arguments);
-      };
-
-      window.addEventListener("load", () => {
-        const saved =
-          JSON.parse(parent.localStorage.getItem("gameData")) || {};
-
-        const gameSave = saved["${name}"];
-
-        if (gameSave) {
-          Object.keys(gameSave).forEach(key => {
-            localStorage.setItem(key, gameSave[key]);
-          });
-        }
-      });
-    </script>
-
-    ${content}
-  `;
-
-  viewer.srcdoc = wrappedContent;
-}
-
-function renderGames() {
-  gameList.innerHTML = `
-    <h2>Saved Games</h2>
-  `;
-
-  savedGames.forEach((game, index) => {
-    const item = document.createElement("div");
-
-    item.className = "game-item";
-
-    item.innerHTML = `
-      <div class="game-name">
-        ${game.name}
-      </div>
-
-      <button class="open-btn">
-        Open
-      </button>
-
-      <button class="delete-btn">
-        Delete
-      </button>
-    `;
-
-    item.querySelector(".open-btn")
-      .addEventListener("click", () => {
-        openGameContent(game.name, game.content);
-      });
-
-    item.querySelector(".delete-btn")
-      .addEventListener("click", () => {
-        deleteGame(index);
-      });
-
-    gameList.appendChild(item);
-  });
+  win.document.open();
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${game.name}</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body { margin: 0; background: black; }
+      </style>
+    </head>
+    <body>
+      ${game.content}
+    </body>
+    </html>
+  `);
+  win.document.close();
 }
 
 function deleteGame(index) {
-  const gameName = savedGames[index].name;
+  const name = savedGames[index].name;
 
-  let gameData =
-    JSON.parse(localStorage.getItem("gameData")) || {};
+  let gameData = JSON.parse(localStorage.getItem("gameData")) || {};
+  delete gameData[name];
 
-  delete gameData[gameName];
-
-  localStorage.setItem(
-    "gameData",
-    JSON.stringify(gameData)
-  );
+  localStorage.setItem("gameData", JSON.stringify(gameData));
 
   savedGames.splice(index, 1);
-
-  localStorage.setItem(
-    "savedGames",
-    JSON.stringify(savedGames)
-  );
+  localStorage.setItem("savedGames", JSON.stringify(savedGames));
 
   renderGames();
+}
+
+function renderGames() {
+  gameList.innerHTML = "<h2>Saved Games</h2>";
+
+  savedGames.forEach((game, index) => {
+    const div = document.createElement("div");
+    div.className = "game-item";
+
+    div.innerHTML = `
+      <div class="game-name">${game.name}</div>
+      <button class="open-btn">Open</button>
+      <button class="delete-btn">Delete</button>
+    `;
+
+    div.querySelector(".open-btn").onclick = () => openGame(game);
+    div.querySelector(".delete-btn").onclick = () => deleteGame(index);
+
+    gameList.appendChild(div);
+  });
 }
 
 fileInput.addEventListener("change", (e) => {
@@ -157,7 +93,6 @@ fileInput.addEventListener("change", (e) => {
 
 dropArea.addEventListener("dragover", (e) => {
   e.preventDefault();
-
   dropArea.classList.add("dragover");
 });
 
@@ -167,16 +102,7 @@ dropArea.addEventListener("dragleave", () => {
 
 dropArea.addEventListener("drop", (e) => {
   e.preventDefault();
-
   dropArea.classList.remove("dragover");
 
-  const file = e.dataTransfer.files[0];
-
-  loadFile(file);
-});
-
-fullscreenBtn.addEventListener("click", () => {
-  if (viewer.requestFullscreen) {
-    viewer.requestFullscreen();
-  }
+  loadFile(e.dataTransfer.files[0]);
 });
