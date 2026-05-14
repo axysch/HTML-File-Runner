@@ -2,7 +2,8 @@ const dropArea = document.getElementById("dropArea");
 const fileInput = document.getElementById("fileInput");
 const gameList = document.getElementById("gameList");
 
-let savedGames = JSON.parse(localStorage.getItem("savedGames")) || [];
+let savedGames =
+  JSON.parse(localStorage.getItem("savedGames")) || [];
 
 renderGames();
 
@@ -15,75 +16,90 @@ function loadFile(file) {
   const reader = new FileReader();
 
   reader.onload = (e) => {
-    saveGame(file.name, e.target.result);
+    const content = e.target.result;
+
+    saveGame(file.name, content);
   };
 
   reader.readAsText(file);
 }
 
 function saveGame(name, content) {
-  if (!savedGames.find(g => g.name === name)) {
-    savedGames.push({ name, content });
+  const exists = savedGames.find(g => g.name === name);
 
-    localStorage.setItem("savedGames", JSON.stringify(savedGames));
+  if (!exists) {
+    savedGames.push({
+      name,
+      content
+    });
+
+    localStorage.setItem(
+      "savedGames",
+      JSON.stringify(savedGames)
+    );
 
     renderGames();
   }
 }
 
 function openGame(game) {
-  const win = window.open();
+  // create blob html page
+  const blob = new Blob(
+    [game.content],
+    { type: "text/html" }
+  );
 
-  win.document.open();
-  win.document.write(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>${game.name}</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>
-        body { margin: 0; background: black; }
-      </style>
-    </head>
-    <body>
-      ${game.content}
-    </body>
-    </html>
-  `);
-  win.document.close();
+  const url = URL.createObjectURL(blob);
+
+  window.open(url, "_blank");
 }
 
 function deleteGame(index) {
-  const name = savedGames[index].name;
-
-  let gameData = JSON.parse(localStorage.getItem("gameData")) || {};
-  delete gameData[name];
-
-  localStorage.setItem("gameData", JSON.stringify(gameData));
-
   savedGames.splice(index, 1);
-  localStorage.setItem("savedGames", JSON.stringify(savedGames));
+
+  localStorage.setItem(
+    "savedGames",
+    JSON.stringify(savedGames)
+  );
 
   renderGames();
 }
 
 function renderGames() {
-  gameList.innerHTML = "<h2>Saved Games</h2>";
+  gameList.innerHTML = `
+    <h2>Saved Games</h2>
+  `;
 
   savedGames.forEach((game, index) => {
-    const div = document.createElement("div");
-    div.className = "game-item";
+    const item = document.createElement("div");
 
-    div.innerHTML = `
-      <div class="game-name">${game.name}</div>
-      <button class="open-btn">Open</button>
-      <button class="delete-btn">Delete</button>
+    item.className = "game-item";
+
+    item.innerHTML = `
+      <div class="game-name">
+        ${game.name}
+      </div>
+
+      <button class="open-btn">
+        Open
+      </button>
+
+      <button class="delete-btn">
+        Delete
+      </button>
     `;
 
-    div.querySelector(".open-btn").onclick = () => openGame(game);
-    div.querySelector(".delete-btn").onclick = () => deleteGame(index);
+    item.querySelector(".open-btn")
+      .addEventListener("click", () => {
+        openGame(game);
+      });
 
-    gameList.appendChild(div);
+    item.querySelector(".delete-btn")
+      .addEventListener("click", () => {
+        deleteGame(index);
+      });
+
+    gameList.appendChild(item);
   });
 }
 
@@ -93,6 +109,7 @@ fileInput.addEventListener("change", (e) => {
 
 dropArea.addEventListener("dragover", (e) => {
   e.preventDefault();
+
   dropArea.classList.add("dragover");
 });
 
@@ -102,7 +119,10 @@ dropArea.addEventListener("dragleave", () => {
 
 dropArea.addEventListener("drop", (e) => {
   e.preventDefault();
+
   dropArea.classList.remove("dragover");
 
-  loadFile(e.dataTransfer.files[0]);
+  const file = e.dataTransfer.files[0];
+
+  loadFile(file);
 });
