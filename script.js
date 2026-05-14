@@ -1,171 +1,113 @@
-const dropArea =
-  document.getElementById("dropArea");
+const dropArea = document.getElementById("dropArea");
+const fileInput = document.getElementById("fileInput");
+const viewer = document.getElementById("viewer");
+const fullscreenBtn = document.getElementById("fullscreenBtn");
 
-const fileInput =
-  document.getElementById("fileInput");
+let savedGames = JSON.parse(localStorage.getItem("savedGames")) || [];
 
-const gameList =
-  document.getElementById("gameList");
-
-const viewer =
-  document.getElementById("viewer");
-
-const fullscreenBtn =
-  document.getElementById("fullscreenBtn");
-
-const viewerContainer =
-  document.getElementById("viewerContainer");
-
-let savedGames =
-  JSON.parse(localStorage.getItem("savedGames"))
-  || [];
-
-renderGames();
+createGameList();
 
 function loadFile(file) {
-
   if (!file.name.endsWith(".html")) {
-    alert("Only .html files allowed");
+    alert("Please upload an HTML file.");
     return;
   }
 
   const reader = new FileReader();
 
-  reader.onload = (e) => {
-
+  reader.onload = function (e) {
     const content = e.target.result;
 
-    saveGame(file.name, content);
+    viewer.srcdoc = content;
 
-    openGame({
-      name: file.name,
-      content: content
-    });
+    saveGame(file.name, content);
   };
 
   reader.readAsText(file);
 }
 
 function saveGame(name, content) {
+  const existing = savedGames.find(game => game.name === name);
 
-  const exists =
-    savedGames.find(g => g.name === name);
-
-  if (!exists) {
-
+  if (!existing) {
     savedGames.push({
       name,
       content
     });
 
-    localStorage.setItem(
-      "savedGames",
-      JSON.stringify(savedGames)
-    );
+    localStorage.setItem("savedGames", JSON.stringify(savedGames));
 
-    renderGames();
+    createGameList();
   }
 }
 
-function openGame(game) {
+function createGameList() {
+  let oldList = document.getElementById("gameList");
 
-  const blob = new Blob(
-    [game.content],
-    { type: "text/html" }
-  );
+  if (oldList) oldList.remove();
 
-  const url =
-    URL.createObjectURL(blob);
+  const list = document.createElement("div");
+  list.id = "gameList";
 
-  viewer.src = url;
-
-  setTimeout(() => {
-    viewer.contentWindow.focus();
-  }, 500);
-}
-
-function deleteGame(index) {
-
-  savedGames.splice(index, 1);
-
-  localStorage.setItem(
-    "savedGames",
-    JSON.stringify(savedGames)
-  );
-
-  renderGames();
-}
-
-function renderGames() {
-
-  gameList.innerHTML =
-    "<h2>Saved Games</h2>";
+  list.innerHTML = `
+    <h2>Saved Games</h2>
+  `;
 
   savedGames.forEach((game, index) => {
+    const item = document.createElement("div");
 
-    const div =
-      document.createElement("div");
+    item.style.marginBottom = "10px";
 
-    div.className = "game-item";
-
-    div.innerHTML = `
-      <div class="game-name">
-        ${game.name}
-      </div>
-
-      <button class="open-btn">
-        Open
-      </button>
-
-      <button class="delete-btn">
-        Delete
-      </button>
+    item.innerHTML = `
+      <button onclick="openGame(${index})">${game.name}</button>
+      <button onclick="deleteGame(${index})">Delete</button>
     `;
 
-    div.querySelector(".open-btn")
-      .onclick = () => openGame(game);
-
-    div.querySelector(".delete-btn")
-      .onclick = () => deleteGame(index);
-
-    gameList.appendChild(div);
+    list.appendChild(item);
   });
+
+  document.querySelector(".app").appendChild(list);
 }
 
-fileInput.addEventListener("change", (e) => {
+window.openGame = function (index) {
+  viewer.srcdoc = savedGames[index].content;
+};
 
+window.deleteGame = function (index) {
+  savedGames.splice(index, 1);
+
+  localStorage.setItem("savedGames", JSON.stringify(savedGames));
+
+  createGameList();
+};
+
+fileInput.addEventListener("change", (e) => {
   loadFile(e.target.files[0]);
 });
 
 dropArea.addEventListener("dragover", (e) => {
-
   e.preventDefault();
-
   dropArea.classList.add("dragover");
 });
 
 dropArea.addEventListener("dragleave", () => {
-
   dropArea.classList.remove("dragover");
 });
 
 dropArea.addEventListener("drop", (e) => {
-
   e.preventDefault();
-
   dropArea.classList.remove("dragover");
 
-  loadFile(e.dataTransfer.files[0]);
+  const file = e.dataTransfer.files[0];
+  loadFile(file);
 });
 
 fullscreenBtn.addEventListener("click", () => {
-
-  if (viewerContainer.requestFullscreen) {
-
-    viewerContainer.requestFullscreen();
+  if (viewer.requestFullscreen) {
+    viewer.requestFullscreen();
+  } else if (viewer.webkitRequestFullscreen) {
+    viewer.webkitRequestFullscreen();
+  } else if (viewer.msRequestFullscreen) {
+    viewer.msRequestFullscreen();
   }
-
-  setTimeout(() => {
-    viewer.contentWindow.focus();
-  }, 500);
 });
