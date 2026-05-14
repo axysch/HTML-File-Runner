@@ -3,25 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Game Runner</title>
+  <title>Game Launcher</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="app">
-    <h1>HTML Game Launcher</h1>
+<div class="app">
 
-    <div class="drop-area" id="dropArea">
-      Drag & Drop .html files here
-      <br><br>
-      <input type="file" id="fileInput" accept=".html">
-    </div>
+  <h1>HTML Game Launcher</h1>
 
-    <div id="gameList">
-      <h2>Saved Games</h2>
-    </div>
+  <div class="drop-area" id="dropArea">
+    Drag & Drop .html files here
+    <br><br>
+
+    <input type="file"
+      id="fileInput"
+      accept=".html">
   </div>
 
-  <script src="script.js"></script>
+  <button id="fullscreenBtn">
+    Fullscreen
+  </button>
+
+  <div id="viewerContainer">
+    <iframe id="viewer"></iframe>
+  </div>
+
+  <div id="gameList">
+    <h2>Saved Games</h2>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
