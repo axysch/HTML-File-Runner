@@ -8,32 +8,26 @@ let savedGames = JSON.parse(localStorage.getItem("savedGames")) || [];
 createGameList();
 
 function loadFile(file) {
-  if (!file.name.endsWith(".html")) {
-    alert("Please upload an HTML file.");
-    return;
-  }
+  if (!file || !file.name.endsWith(".html")) return;
 
   const reader = new FileReader();
 
   reader.onload = function (e) {
     const content = e.target.result;
 
-    viewer.srcdoc = content;
-
     saveGame(file.name, content);
+
+    openGame(content);
   };
 
   reader.readAsText(file);
 }
 
 function saveGame(name, content) {
-  const existing = savedGames.find(game => game.name === name);
+  const exists = savedGames.find(g => g.name === name);
 
-  if (!existing) {
-    savedGames.push({
-      name,
-      content
-    });
+  if (!exists) {
+    savedGames.push({ name, content });
 
     localStorage.setItem("savedGames", JSON.stringify(savedGames));
 
@@ -41,45 +35,51 @@ function saveGame(name, content) {
   }
 }
 
+function openGame(content) {
+  const blob = new Blob([content], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+
+  viewer.src = url;
+
+  setTimeout(() => {
+    try {
+      viewer.contentWindow.focus();
+    } catch (e) {}
+  }, 300);
+}
+
 function createGameList() {
   let oldList = document.getElementById("gameList");
-
   if (oldList) oldList.remove();
 
   const list = document.createElement("div");
   list.id = "gameList";
 
-  list.innerHTML = `
-    <h2>Saved Games</h2>
-  `;
+  list.innerHTML = `<h2>Saved Games</h2>`;
 
   savedGames.forEach((game, index) => {
     const item = document.createElement("div");
-
-    item.style.marginBottom = "10px";
+    item.className = "game-item";
 
     item.innerHTML = `
-      <button onclick="openGame(${index})">${game.name}</button>
-      <button onclick="deleteGame(${index})">Delete</button>
+      <div class="game-name">${game.name}</div>
+      <button class="open-btn">Open</button>
+      <button class="delete-btn">Delete</button>
     `;
+
+    item.querySelector(".open-btn").onclick = () => openGame(game.content);
+
+    item.querySelector(".delete-btn").onclick = () => {
+      savedGames.splice(index, 1);
+      localStorage.setItem("savedGames", JSON.stringify(savedGames));
+      createGameList();
+    };
 
     list.appendChild(item);
   });
 
   document.querySelector(".app").appendChild(list);
 }
-
-window.openGame = function (index) {
-  viewer.srcdoc = savedGames[index].content;
-};
-
-window.deleteGame = function (index) {
-  savedGames.splice(index, 1);
-
-  localStorage.setItem("savedGames", JSON.stringify(savedGames));
-
-  createGameList();
-};
 
 fileInput.addEventListener("change", (e) => {
   loadFile(e.target.files[0]);
@@ -98,16 +98,13 @@ dropArea.addEventListener("drop", (e) => {
   e.preventDefault();
   dropArea.classList.remove("dragover");
 
-  const file = e.dataTransfer.files[0];
-  loadFile(file);
+  loadFile(e.dataTransfer.files[0]);
 });
 
 fullscreenBtn.addEventListener("click", () => {
-  if (viewer.requestFullscreen) {
-    viewer.requestFullscreen();
-  } else if (viewer.webkitRequestFullscreen) {
-    viewer.webkitRequestFullscreen();
-  } else if (viewer.msRequestFullscreen) {
-    viewer.msRequestFullscreen();
+  const container = document.getElementById("viewerContainer");
+
+  if (container && container.requestFullscreen) {
+    container.requestFullscreen();
   }
 });
