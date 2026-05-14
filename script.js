@@ -1,7 +1,15 @@
-const dropArea = document.getElementById("dropArea");
-const fileInput = document.getElementById("fileInput");
-const gameList = document.getElementById("gameList");
-const viewer = document.getElementById("viewer");
+const dropArea =
+  document.getElementById("dropArea");
+
+const fileInput =
+  document.getElementById("fileInput");
+
+const gameList =
+  document.getElementById("gameList");
+
+const viewer =
+  document.getElementById("viewer");
+
 const fullscreenBtn =
   document.getElementById("fullscreenBtn");
 
@@ -9,11 +17,13 @@ const viewerContainer =
   document.getElementById("viewerContainer");
 
 let savedGames =
-  JSON.parse(localStorage.getItem("savedGames")) || [];
+  JSON.parse(localStorage.getItem("savedGames"))
+  || [];
 
 renderGames();
 
 function loadFile(file) {
+
   if (!file.name.endsWith(".html")) {
     alert("Only .html files allowed");
     return;
@@ -22,11 +32,14 @@ function loadFile(file) {
   const reader = new FileReader();
 
   reader.onload = (e) => {
-    saveGame(file.name, e.target.result);
+
+    const content = e.target.result;
+
+    saveGame(file.name, content);
 
     openGame({
       name: file.name,
-      content: e.target.result
+      content: content
     });
   };
 
@@ -34,10 +47,12 @@ function loadFile(file) {
 }
 
 function saveGame(name, content) {
+
   const exists =
     savedGames.find(g => g.name === name);
 
   if (!exists) {
+
     savedGames.push({
       name,
       content
@@ -53,7 +68,16 @@ function saveGame(name, content) {
 }
 
 function openGame(game) {
-  viewer.srcdoc = game.content;
+
+  const blob = new Blob(
+    [game.content],
+    { type: "text/html" }
+  );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  viewer.src = url;
 
   setTimeout(() => {
     viewer.contentWindow.focus();
@@ -61,6 +85,7 @@ function openGame(game) {
 }
 
 function deleteGame(index) {
+
   savedGames.splice(index, 1);
 
   localStorage.setItem(
@@ -72,12 +97,14 @@ function deleteGame(index) {
 }
 
 function renderGames() {
+
   gameList.innerHTML =
     "<h2>Saved Games</h2>";
 
   savedGames.forEach((game, index) => {
 
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
 
     div.className = "game-item";
 
@@ -106,20 +133,24 @@ function renderGames() {
 }
 
 fileInput.addEventListener("change", (e) => {
+
   loadFile(e.target.files[0]);
 });
 
 dropArea.addEventListener("dragover", (e) => {
+
   e.preventDefault();
 
   dropArea.classList.add("dragover");
 });
 
 dropArea.addEventListener("dragleave", () => {
+
   dropArea.classList.remove("dragover");
 });
 
 dropArea.addEventListener("drop", (e) => {
+
   e.preventDefault();
 
   dropArea.classList.remove("dragover");
@@ -130,6 +161,7 @@ dropArea.addEventListener("drop", (e) => {
 fullscreenBtn.addEventListener("click", () => {
 
   if (viewerContainer.requestFullscreen) {
+
     viewerContainer.requestFullscreen();
   }
 
