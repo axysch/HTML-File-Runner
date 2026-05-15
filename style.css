@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   background: #121212;
@@ -8,10 +12,12 @@ body {
 .app {
   padding: 20px;
   text-align: center;
+  width: 100%;
 }
 
 h1 {
   margin-bottom: 20px;
+  font-size: 36px;
 }
 
 .drop-area {
@@ -19,12 +25,13 @@ h1 {
   padding: 40px;
   border-radius: 15px;
   background: #1e1e1e;
-  transition: 0.3s;
+  transition: 0.2s;
   margin-bottom: 20px;
+  width: 100%;
 }
 
 .drop-area.dragover {
-  background: #2d2d2d;
+  background: #2a2a2a;
   border-color: #4f46e5;
 }
 
@@ -42,27 +49,36 @@ button {
   cursor: pointer;
   font-size: 16px;
   margin: 5px;
-  transition: 0.2s;
+  transition: background 0.2s ease;
 }
 
 button:hover {
   background: #3730a3;
-  transform: scale(1.03);
+}
+
+#fullscreenBtn {
+  background: #2563eb;
+}
+
+#fullscreenBtn:hover {
+  background: #1d4ed8;
 }
 
 #viewerContainer {
   width: 100%;
-  height: 500px;
+  height: 600px;
   margin-top: 20px;
   border-radius: 15px;
   overflow: hidden;
   background: black;
+  border: 2px solid #333;
 }
 
-iframe {
+#viewer {
   width: 100%;
   height: 100%;
   border: none;
+  display: block;
   background: white;
 }
 
@@ -73,24 +89,56 @@ iframe {
   border-radius: 15px;
 }
 
+#gameList h2 {
+  margin-top: 0;
+}
+
 .game-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin: 10px 0;
+  margin-bottom: 10px;
+  padding: 12px;
+  background: #252525;
+  border-radius: 10px;
   flex-wrap: wrap;
 }
 
 .game-name {
   flex: 1;
   text-align: left;
+  word-break: break-word;
 }
 
 .open-btn {
   background: #16a34a;
 }
 
+.open-btn:hover {
+  background: #166534;
+}
+
 .delete-btn {
   background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #991b1b;
+}
+
+@media (max-width: 700px) {
+
+  .game-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #viewerContainer {
+    height: 450px;
+  }
 }
