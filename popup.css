@@ -1,1 +1,72 @@
+/* popup.css */
 
+#afxPopupOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.25s ease;
+
+    z-index: 999999;
+}
+
+#afxPopupOverlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#afxPopupBox {
+    width: min(850px, 92vw);
+    background: #0b0b0b;
+    border: 2px solid #d4af37;
+    border-radius: 16px;
+
+    padding: 40px;
+    color: white;
+    text-align: center;
+
+    transform: scale(0.92);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+
+    box-shadow: 0 0 40px rgba(212,175,55,0.25);
+}
+
+#afxPopupOverlay.show #afxPopupBox {
+    transform: scale(1);
+}
+
+#afxClose {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+
+    font-size: 28px;
+    cursor: pointer;
+    color: #d4af37;
+}
+
+#afxTitle {
+    font-size: 2.5rem;
+    color: #d4af37;
+}
+
+#afxBtn {
+    margin-top: 25px;
+    display: inline-block;
+
+    padding: 12px 22px;
+    background: #d4af37;
+    color: black;
+
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
