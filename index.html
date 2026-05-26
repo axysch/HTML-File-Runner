@@ -3,13 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>HTML File Runner</title>
 
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./popup.css">
 </head>
+
+<body>
+
+<!-- POPUP (MUST BE INSIDE BODY) -->
 <div id="afxPopupOverlay">
   <div id="afxPopupBox">
 
@@ -25,49 +29,33 @@
   </div>
 </div>
 
-<script src="popup.js"></script>
-<body>
+<div class="app">
 
-  <div class="app">
+  <h1>HTML File Runner</h1>
 
-    <h1>HTML File Runner</h1>
+  <div class="drop-area" id="dropArea">
+    Drag & Drop an .html file here
+    <br><br>
+    or
+    <br><br>
 
-    <div class="drop-area" id="dropArea">
-
-      Drag & Drop an .html file here
-
-      <br><br>
-
-      or
-
-      <br><br>
-
-      <input
-        type="file"
-        id="fileInput"
-        accept=".html"
-      >
-
-    </div>
-
-    <button id="fullscreenBtn">
-      Fullscreen Preview
-    </button>
-
-    <div id="viewerContainer">
-
-      <iframe
-        id="viewer"
-        allowfullscreen
-        allow="fullscreen; autoplay; gamepad *; xr-spatial-tracking"
-      ></iframe>
-
-    </div>
-
+    <input type="file" id="fileInput" accept=".html">
   </div>
 
-  <script src="./script.js"></script>
+  <button id="fullscreenBtn">Fullscreen Preview</button>
+
+  <div id="viewerContainer">
+    <iframe
+      id="viewer"
+      allowfullscreen
+      allow="fullscreen; autoplay; gamepad *; xr-spatial-tracking"
+    ></iframe>
+  </div>
+
+</div>
+
+<script src="./script.js"></script>
+<script src="./popup.js"></script>
 
 </body>
-
 </html>
